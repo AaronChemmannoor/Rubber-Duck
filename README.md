@@ -47,33 +47,30 @@ draw_waves()
 # ANIMATION LOOP
 # ----------------------------
 time_step = 0
-while time_step < 1000: 
-    painter.clear()
+# Start the duck off-screen to the right
+start_x = 450 
 
-    # Calculate the "Bobbing" effect
-    if (time_step // 30) % 2 == 0:
-        up_down_offset = time_step % 30
-    else:
-        up_down_offset = 30 - (time_step % 30)
+while time_step < 2000: 
+    painter.clear()
     
-    # Base position of the duck
-    center_x = -50 
-    center_y = -100 + up_down_offset
+    # Movement: Right to Left (Subtracting from x)
+    # The 0.5 makes it move "really slow"
+    center_x = start_x - (time_step * 0.5)
+    center_y = -80 
 
     painter.pensize(8)
     painter.pencolor(dark_outline)
 
-    # 1. DRAW THE TAIL (Relative to body)
+    # 1. DRAW THE TAIL
     painter.fillcolor(ducky_yellow)
     painter.penup()
-    # Positioned relative to the back of the body
     painter.goto(center_x + 190, center_y + 110) 
     painter.pendown()
     painter.begin_fill()
-    painter.setheading(0) # Angled up
+    painter.setheading(0) 
     painter.forward(100)
     painter.right(120)
-    painter.circle(-100, 50) # Curved bottom of tail
+    painter.circle(-100, 50) 
     painter.end_fill()
 
     # 2. DRAW THE BODY
@@ -127,6 +124,13 @@ while time_step < 1000:
     painter.left(90)
     painter.circle(80, 90) 
     painter.end_fill()
+
+    # 7. SAY QUACK
+    painter.penup()
+    # Position the text near the beak
+    painter.goto(head_center_x - 150, head_center_y + 50)
+    painter.pencolor("black")
+    painter.write("Quack!", font=("Arial", 24, "bold"))
 
     window.update() 
     time_step += 1
