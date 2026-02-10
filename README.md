@@ -1,136 +1,163 @@
 import turtle as trtl
+import math
 
 # ----------------------------
 # SCREEN SETUP
 # ----------------------------
 window = trtl.Screen()
 window.setup(900, 600)
-window.bgcolor("#00D5FF")  # Bright blue water background
+# Distinct Sky Color
+window.bgcolor("#87CEEB")  
 
 painter = trtl.Turtle()
 painter.hideturtle()
 painter.speed(0)
 
-# Color Palette
+# Colors based on reference
 dark_outline = "#1b0038"
 ducky_yellow = "#FFD400"
-beak_color = "#FF8C00"
-feet_color = "#FF8C00"
+beak_red_orange = "#FF4500" 
+highlight_white = "#FFFFFF"
+water_color = "#00BFFF" # Deep Deep Blue for water
 
 window.tracer(0)
 
 # ----------------------------
-# DRAW WATER WAVES
+# DRAW WATER BACKGROUND & WAVES
 # ----------------------------
 wave_maker = trtl.Turtle()
 wave_maker.hideturtle()
 wave_maker.speed(0)
-wave_maker.pensize(4)
 
-def draw_waves():
-    horizontal_position = -450
-    while horizontal_position <= 450:
-        if horizontal_position % 120 == 0:
-            wave_maker.pencolor("white")
-        else:
-            wave_maker.pencolor("#b9f1ff")
-        wave_maker.penup()
-        wave_maker.goto(horizontal_position, -240)
-        wave_maker.pendown()
-        wave_maker.setheading(0)
-        wave_maker.circle(30, 120)
-        horizontal_position += 60
+def draw_environment():
+    # Draw the solid water block
+    wave_maker.penup()
+    wave_maker.goto(-450, -300)
+    wave_maker.fillcolor(water_color)
+    wave_maker.begin_fill()
+    for _ in range(2):
+        wave_maker.forward(900)
+        wave_maker.left(90)
+        wave_maker.forward(120) # Height of the water
+        wave_maker.left(90)
+    wave_maker.end_fill()
 
-draw_waves()
+draw_environment()
+
+# ----------------------------
+# HELPER: DRAW ELLIPSE
+# ----------------------------
+def draw_duck_ellipse(t, x, y, width, height, color):
+    t.penup()
+    t.goto(x + width, y)
+    t.setheading(90)
+    t.pendown()
+    t.fillcolor(color)
+    t.begin_fill()
+    for i in range(0, 361, 5):
+        rad = math.radians(i)
+        px = x + width * math.cos(rad)
+        py = y + height * math.sin(rad)
+        t.goto(px, py)
+    t.end_fill()
 
 # ----------------------------
 # ANIMATION LOOP
 # ----------------------------
 time_step = 0
-# Start the duck off-screen to the right
-start_x = 450 
+start_x = 550 
 
-while time_step < 2000: 
+while time_step < 5000: 
     painter.clear()
     
-    # Movement: Right to Left (Subtracting from x)
-    # The 0.5 makes it move "really slow"
-    center_x = start_x - (time_step * 0.5)
-    center_y = -80 
+    # Movement: Slow Right to Left
+    cx = start_x - (time_step * 0.25)
+    cy = -135 
 
-    painter.pensize(8)
+    painter.pensize(5)
     painter.pencolor(dark_outline)
 
-    # 1. DRAW THE TAIL
+    # 1. THE BODY (More Compressed Ellipse)
+    # Changed width to 120 and height to 75 for a flatter look
+    draw_duck_ellipse(painter, cx, cy, 120, 75, ducky_yellow)
+
+    # 2. THE TAIL (Flowing from the back)
+    painter.penup()
+    # Adjusted position for compressed body
+    painter.goto(cx + 100, cy + 30) 
+    painter.setheading(50)
+    painter.pendown()
     painter.fillcolor(ducky_yellow)
-    painter.penup()
-    painter.goto(center_x + 190, center_y + 110) 
-    painter.pendown()
     painter.begin_fill()
-    painter.setheading(0) 
-    painter.forward(100)
-    painter.right(120)
-    painter.circle(-100, 50) 
+    painter.circle(45, 95)
+    painter.setheading(215)
+    painter.circle(100, 45)
     painter.end_fill()
 
-    # 2. DRAW THE BODY
+    # 3. THE NECK & HEAD
+    hx, hy = cx - 75, cy + 115 # Lowered head slightly for compression
+    # Neck 
     painter.penup()
-    painter.goto(center_x, center_y)
-    painter.pendown()
+    painter.goto(hx - 30, hy - 60)
     painter.begin_fill()
-    painter.setheading(270)
-    painter.circle(120)
-    painter.end_fill() 
-
-    # 3. DRAW THE HEAD
-    head_center_x = center_x + 80
-    head_center_y = center_y + 160
-    painter.penup()
-    painter.goto(head_center_x, head_center_y - 85)
-    painter.setheading(0)
-    painter.pendown()
-    painter.begin_fill()
-    painter.circle(85) 
-    painter.end_fill()
-
-    # 4. DRAW THE BEAK
-    painter.fillcolor(beak_color)
-    painter.penup()
-    painter.goto(head_center_x - 80, head_center_y + 10)
-    painter.pendown()
-    painter.begin_fill()
-    painter.setheading(170)
-    painter.circle(35, 90) 
-    painter.setheading(280)
-    painter.circle(35, 90) 
-    painter.end_fill()
-
-    # 5. DRAW THE EYE
-    painter.fillcolor(dark_outline)
-    painter.penup()
-    painter.goto(head_center_x - 35, head_center_y + 25)
-    painter.begin_fill()
-    painter.circle(12)
+    painter.setheading(90)
+    painter.circle(-35, 180) 
     painter.end_fill()
     
-    # 6. DRAW THE WING
-    painter.fillcolor(ducky_yellow)
+    # Head
     painter.penup()
-    painter.goto(center_x + 100, center_y - 25)
+    painter.goto(hx, hy - 55)
+    painter.setheading(0)
     painter.pendown()
+    painter.fillcolor(ducky_yellow)
     painter.begin_fill()
-    painter.setheading(-40)
-    painter.circle(80, 90) 
-    painter.left(90)
-    painter.circle(80, 90) 
+    painter.circle(65) 
     painter.end_fill()
 
-    # 7. SAY QUACK
+    # 4. THE BEAK
+    painter.fillcolor(beak_red_orange)
     painter.penup()
-    # Position the text near the beak
-    painter.goto(head_center_x - 150, head_center_y + 50)
-    painter.pencolor("black")
-    painter.write("Quack!", font=("Arial", 24, "bold"))
+    painter.goto(hx - 55, hy + 5)
+    painter.pendown()
+    painter.begin_fill()
+    painter.setheading(160)
+    painter.circle(20, 190) 
+    painter.setheading(0)
+    painter.forward(45)
+    painter.end_fill()
+
+    # 5. THE EYE
+    eye_x = hx - 5 
+    painter.penup()
+    painter.goto(eye_x, hy + 45)
+    painter.fillcolor(highlight_white)
+    painter.begin_fill()
+    painter.circle(15) 
+    painter.end_fill()
+    painter.goto(eye_x, hy + 50)
+    painter.fillcolor("black")
+    painter.begin_fill()
+    painter.circle(8) 
+    painter.end_fill()
+
+    # 6. THE WING (Folded feather shape)
+    painter.penup()
+    # Adjusted position for compressed body
+    painter.goto(cx + 25, cy + 10)
+    painter.fillcolor(ducky_yellow)
+    painter.setheading(15)
+    painter.pendown()
+    painter.begin_fill()
+    painter.circle(-80, 65)
+    painter.setheading(195)
+    painter.circle(-110, 45)
+    painter.end_fill()
+
+    # 7. QUACK TEXT
+    painter.penup()
+    painter.goto(hx - 140, hy + 110)
+    painter.pencolor("white")
+    painter.write("Quack!", font=("Arial", 32, "bold"))
 
     window.update() 
     time_step += 1
