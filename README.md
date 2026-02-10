@@ -6,6 +6,7 @@ import math
 # ----------------------------
 screen = trtl.Screen()
 screen.setup(900, 600)
+screen.title("Swimming Duck Animation")
 # Use a sky blue background color
 screen.bgcolor("#87CEEB")  
 
@@ -73,18 +74,18 @@ def draw_duck_ellipse(turt, center_x, center_y, width, height, color):
 frame_count = 0
 starting_x_pos = 550 
 
-while frame_count < 5000: 
+# Using while True so the duck keeps swimming forever
+while True: 
     duck_drawer.clear()
     
     # Calculate Movement: Moves the duck from right to left over time
-    current_x = starting_x_pos - (frame_count * 0.25)
+    current_x = starting_x_pos - (frame_count * 2) # Slightly faster speed
     current_y = -135 
 
     duck_drawer.pensize(5)
     duck_drawer.pencolor(OUTLINE_COLOR)
 
     # 1. DRAW THE BODY
-    # width=120, height=75 creates a squat, "rubbery" look
     draw_duck_ellipse(duck_drawer, current_x, current_y, 120, 75, DUCK_YELLOW)
 
     # 2. DRAW THE TAIL
@@ -169,5 +170,11 @@ while frame_count < 5000:
     # Refresh screen for the next frame
     screen.update() 
     frame_count += 1
+
+    # --- THE IF STATEMENT ---
+    # If the duck's X position goes past the left edge (-600),
+    # reset frame_count to 0 to start him back at the right side.
+    if current_x < -600:
+        frame_count = 0
 
 trtl.done()
